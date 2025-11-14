@@ -1,0 +1,55 @@
+{
+  "kinesis-sink-connector": {
+    "name": "kinesis-sink-connector",
+    "config": {
+      "connector.class": "org.apache.kafka.connect.storage.StringConverter",
+      "tasks.max": "1",
+      "topics": "streaming.users,streaming.orders,streaming.user_events",
+      "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+      "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+      "value.converter.schemas.enable": "false"
+    }
+  },
+  "elasticsearch-sink-connector": {
+    "name": "elasticsearch-sink-connector",
+    "config": {
+      "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+      "tasks.max": "1",
+      "topics": "streaming.users,streaming.orders,streaming.user_events,streaming.product_views",
+      "connection.url": "http://elasticsearch:9200",
+      "type.name": "_doc",
+      "key.ignore": "true",
+      "schema.ignore": "true",
+      "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+      "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+      "value.converter.schemas.enable": "false",
+      "transforms": "addTimestamp",
+      "transforms.addTimestamp.type": "org.apache.kafka.connect.transforms.InsertField$Value",
+      "transforms.addTimestamp.timestamp.field": "kafka_timestamp"
+    }
+  },
+  "s3-sink-connector": {
+    "name": "s3-sink-connector",
+    "config": {
+      "connector.class": "io.confluent.connect.s3.S3SinkConnector",
+      "tasks.max": "1",
+      "topics": "streaming.users,streaming.orders,streaming.order_items,streaming.user_events,streaming.product_views",
+      "s3.region": "us-east-1",
+      "s3.bucket.name": "streaming-data-archive",
+      "s3.part.size": 5242880,
+      "flush.size": 1000,
+      "rotate.interval.ms": 300000,
+      "timezone": "UTC",
+      "partition.duration.ms": 3600000,
+      "path.format": "YYYY/MM/dd/HH",
+      "locale": "en",
+      "schema.generator.class": "io.confluent.connect.storage.hive.schema.DefaultSchemaGenerator",
+      "partitioner.class": "io.confluent.connect.storage.partitioner.TimeBasedPartitioner",
+      "storage.class": "io.confluent.connect.s3.storage.S3Storage",
+      "format.class": "io.confluent.connect.s3.format.json.JsonFormat",
+      "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+      "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+      "value.converter.schemas.enable": "false"
+    }
+  }
+}
